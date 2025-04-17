@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resume Chatbot</title>
+  <style>
+    /* Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to right, #f5f7fa, #c3cfe2);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #2d3436;
+      margin-bottom: 20px;
+    }
+
+    .form-container {
+      background-color: #ffffff;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .form-container:hover {
+      transform: scale(1.01);
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 18px;
+      color: #34495e;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #dcdde1;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      background: #6c5ce7;
+      color: white;
+      font-size: 18px;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #4834d4;
+    }
+
+    #questions {
+      margin-top: 30px;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .question {
+      background: #ffeaa7;
+      padding: 15px 20px;
+      border-left: 5px solid #fdcb6e;
+      margin: 12px 0;
+      border-radius: 8px;
+      font-size: 17px;
+      color: #2d3436;
+      transition: all 0.3s ease;
+    }
+
+    .question:hover {
+      background-color: #ffeaa7cc;
+      transform: translateX(5px);
+    }
+
+    .question-title {
+      font-weight: bold;
+      font-size: 20px;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Resume Chatbot</h1>
+
+  <div class="form-container">
+    <form id="uploadForm">
+      <label for="resume">Upload your resume (PDF):</label>
+      <input type="file" name="resume" id="resume" accept=".pdf" required />
+      <button type="submit">Ask Me Questions</button>
+    </form>
+  </div>
+
+  <div id="questions"></div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const questionsDiv = document.getElementById('questions');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('resume');
+      const formData = new FormData();
+      formData.append('resume', fileInput.files[0]);
+
+      fetch('/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        questionsDiv.innerHTML = '<div class="question-title">Chatbot Questions:</div>';
+        data.questions.forEach(q => {
+          const div = document.createElement('div');
+          div.className = 'question';
+          div.innerText = q;
+          questionsDiv.appendChild(div);
+        });
+      })
+      .catch(err => {
+        questionsDiv.innerHTML = '<div class="question">Error: ' + err.message + '</div>';
+      });
+    });
+  </script>
+
+</body>
+</html>
+
